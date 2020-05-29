@@ -1,0 +1,10 @@
+header {
+	float: initial;
+}
+
+section {
+	float: initial;
+	width: initial;
+	position: fixed;
+	padding-left: 300px;
+}
