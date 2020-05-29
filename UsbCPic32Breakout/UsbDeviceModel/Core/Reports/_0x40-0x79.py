@@ -1,0 +1,505 @@
+pins = ["A2", "A3", "A4", "B0", "B1", "B2", "B3", "B4", "B5", "B7", "C9"]
+
+def encoded_pin(name):
+	bank = ord(name[0]) - ord('A')
+	index = ord(name[1]) - ord('0')
+	return ((bank << 4) & 0x30) | (index & 0x0f)
+
+def report_id_for(pin):
+	return 0x40 | (pin & 0x3f)
+
+if __name__ == "__main__":
+	for pin_name in pins:
+		report_id = report_id_for(encoded_pin(pin_name))
+		fd = open('0x{reportId:02x}.md'.format(reportId=report_id), 'w+')
+		fd.write(
+"""
+# Core - Pin Configuration ({pinName})
+Report Type: IN / OUT<br />
+Report Size: 19 Bytes<br />
+Acknowledged By: [Command Acknowledgement](0x01.md)
+
+| Report ID            | Unlock Key | Suspend Behaviour                        | Interface ID     | Function ID | Function Arguments |
+|----------------------|------------|------------------------------------------|------------------|-------------|--------------------|
+| 01&nbsp;{bankId2Bits:02b}&nbsp;{pinIndex4Bits:04b} | 8 bytes    | `ss`&nbsp;`r`&nbsp;00&nbsp;`o`&nbsp;`wp` | 0000&nbsp;`iiii` | `ffffffff`  | 7 bytes            |
+
+**THIS COMMAND HAS THE POTENTIAL TO DESTROY THE DEVICE AND / OR CONNECTED CIRCUITRY, IE. BY SHORT-CIRCUITING TWO OUTPUTS TOGETHER.**
+
+## Report ID
+HID Report ID.  Always `0x{reportId:02x}`.
+
+The _Pin Configuration_ report IDs all follow this encoding scheme:
+| Bits   | Direction | Meaning                                                                     |
+|--------|-----------|-----------------------------------------------------------------------------|
+| 01     |           |                                                                             |
+| `bb`   | IN / OUT  | Bank number; `00` for *A*, `01` for *B*, `10` for *C* and `11` is reserved. |
+| `pppp` | IN / OUT  | The pin's index into the bank.                                              |
+
+For example, pin *B0* is `01` `0000`, *C9* is `10` `1001`, etc.  Thus *{pinName}* is `{bankId2Bits:02b}` `{pinIndex4Bits:04b}`.  Undefined pins give invalid
+report IDs and so will result in a Negative [Command Acknowledgement](0x01.md) response.  No changes will be made in this instance.
+
+## Unlock Key
+An 8-byte key that is compared against a [previously stored value](../../ControlEndpoint/Reports/0x01.md).
+This mechanism prevents accidental in-circuit re-configuration of a pin, which could adversely affect
+the device or connected circuit.
+
+If the given key does not match the one stored against the configuration then the command will have no effect and a Negative
+[Command Acknowledgement](0x01.md) will be returned.
+
+For an IN Report this will be all zeroes.
+
+## Suspend Behaviour
+The behaviour of the pin when the device enters Suspend.
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| `ss`  | IN / OUT  | Suspend behaviour; `00` for unchanged, `01` to switch to input, `10` to output low, `11` to output high.       |
+| `r`   | IN / OUT  | Remote Wake-Up; `0` to disable, `1` to wake from Suspend when a transition occurs on the pin.                  |
+| 00    |           |                                                                                                                |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+## Interface ID
+Out-of-range *Interface IDs*, ie. those not listed below, will cause a Negative [Command Acknowledgement](0x01.md).
+
+### [0x00 - Core (Pin)](../Interface.md)
+Any pin can be assigned to this interface.
+
+#### GPIO<a name="gpio" />
+The pin is assigned to the GPIO function.  Any pin can be assigned to this function.
+| Function ID | Pin Behaviour                    | Interrupt Behaviour              | Flags            | Reserved                                           |
+|-------------|----------------------------------|----------------------------------|------------------|----------------------------------------------------|
+| 000000`dd`  | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 00000&nbsp;`p`&nbsp;`n`&nbsp;`m` | 0000&nbsp;`iiii` | 00000000&nbsp;00000000&nbsp;00000000&nbsp;00000000 |
+
+| Bits   | Direction | Meaning                                                                                                                        |
+|--------|-----------|--------------------------------------------------------------------------------------------------------------------------------|
+| 000000 |           |                                                                                                                                |
+| `dd`   | IN / OUT  | Pin direction; `00` for input, `01` for output, `10` and `11` are reserved but will default to input and output, respectively. |
+
+| Bits   | Direction | Meaning                                                                                                        |
+|--------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000   |           |                                                                                                                |
+| `l`    | IN / OUT  | The initial value of the output latch after power-on.                                                          |
+| `o`    | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`   | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+| Bits  | Direction | Meaning                                               |
+|-------|-----------|-------------------------------------------------------|
+| 00000 |           |                                                       |
+| `p`   | IN / OUT  | Interrupt on positive edges if set to `1`.            |
+| `n`   | IN / OUT  | Interrupt on negative edges if set to `1`.            |
+| `m`   | IN / OUT  | Interrupt mode; `0` for one-shot, `1` for continuous. |
+
+| Bits   | Direction | Meaning                                                                                                                                                                   |
+|--------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0000   |           |                                                                                                                                                                           |
+| `iiii` | IN / OUT  | An ID for the pin, in the range `[0, 10]`.  This is useful for assigning application-specific weights to the pins, for example during [parallel value outputs](0x04.md). |
+
+It is not possible to assign the same ID to multiple pins - the pin assigned last 'wins'.  The default mapping is:
+
+| A2 | A3 | A4 | B0 | B1 | B2 | B3 | B4 | B5 | B7 | C9 |
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 |
+
+<!--
+### [0x01 - Timer](../../Timer/Interface.md)
+| Function ID | Function Arguments |
+|-------------|--------------------|
+| `????????`  | TODO !             |
+
+TIMER1 cannot use any pins for clock or gate input.  Triggers or resets would be possible though.
+TIMER2 cannot use any pins for clock or gate input.  Triggers or resets would be possible though.
+TIMER3 can use RC9 as clock input.
+
+### [0x02 - CCP (Capture / Compare / PWM)](../../Ccp/Interface.md)
+There are 9 CCP peripherals available for use and configuration.  The first 3 are *MCCP* (Multiple CCP), meaning they can provide multiple outputs,
+and the remaining 6 are *SCCP* (Single CCP), meaning they can only provide a single output.
+
+MCCP peripherals provide up to 6 outputs, labelled `[A, F]`.  Not all outputs are available for use and configuration.
+
+Any pin can be assigned to this interface but some functions require dedicated pins.
+
+#### MCCP1 Output C
+The pin is assigned to the *C* Output.  Only *A2* can be assigned to this function.
+| Function ID | Function Arguments |
+|-------------|--------------------|
+| `????????`  | TODO !             |
+
+#### MCCP1 Output D
+The pin is assigned to the *D* Output.  Only *A3* can be assigned to this function.
+
+TODO
+
+#### MCCP2 Output A
+The pin is assigned to the *A* Output.  Only *C9* can be assigned to this function.
+
+TODO
+
+#### MCCP2 Output C
+The pin is assigned to the *C* Output.  Only *B0* can be assigned to this function.
+
+TODO
+
+#### MCCP2 Output D
+The pin is assigned to the *D* Output.  Only *B1* can be assigned to this function.
+
+TODO
+
+#### MCCP2 Output E
+The pin is assigned to the *E* Output.  Only *B2* can be assigned to this function.
+
+TODO
+
+#### MCCP2 Output F
+The pin is assigned to the *F* Output.  Only *B3* can be assigned to this function.
+
+TODO
+
+#### MCCP3 Output C
+The pin is assigned to the *C* Output.  Only *B4* can be assigned to this function.
+
+TODO
+
+#### MCCP3 Output D
+The pin is assigned to the *D* Output.  Only *A4* can be assigned to this function.
+
+TODO
+
+#### MCCP3 Output E
+The pin is assigned to the *E* Output.  Only *B5* can be assigned to this function.
+
+TODO
+
+#### MCCP3 Output F
+The pin is assigned to the *F* Output.  Only *B7* can be assigned to this function.
+
+TODO
+
+#### SCCP4 Output
+The pin is assigned to the Output.  Any pin can be assigned to this function.
+
+TODO
+
+#### SCCP5 Output
+The pin is assigned to the Output.  Any pin can be assigned to this function.
+
+TODO
+
+#### SCCP6 Output
+The pin is assigned to the Output.  Any pin can be assigned to this function.
+
+TODO
+
+#### SCCP7 Output
+The pin is assigned to the Output.  Any pin can be assigned to this function.
+
+TODO
+
+#### SCCP8 Output
+The pin is assigned to the Output.  Any pin can be assigned to this function.
+
+TODO
+
+#### SCCP9 Output
+The pin is assigned to the Output.  Any pin can be assigned to this function.
+
+TODO
+-->
+### [0x03 - USB (Universal Serial Bus)](../../Usb/Interface.md)<a name="usb" />
+Any pin can be assigned to this interface.
+
+#### Status Flags
+The pin is assigned to the Status Flags function which provides information on the state of the USB cable, connector and protocol.
+Any pin can be assigned to this function.  Multiple pins can be assigned to this function, each with independent parameters.
+
+Multiple flags can be combined together into a single output pin using either an AND or an OR operation.  Flags can also be inverted
+prior to the combining operation.  This scheme provides a very flexible method of signalling USB state to connected circuitry.
+For example, it is possible to have a pin indicating the condition of _NOT attached to a dedicated charger AND the device can source a current of at least 100mA_.
+| Function ID      | Pin Behaviour                    | Mask LSB                                                           | Mask MSB                                                         | Mask Inversion LSB                                                 | Mask Inversion MSB                                               | Current LSB | Current MSB      |
+|------------------|----------------------------------|--------------------------------------------------------------------|------------------------------------------------------------------|--------------------------------------------------------------------|------------------------------------------------------------------|-------------|------------------|
+| 0000100&nbsp;`m` | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | `h`&nbsp;`g`&nbsp;`f`&nbsp;`e`&nbsp;`d`&nbsp;`c`&nbsp;`b`&nbsp;`a` | 0&nbsp;`s`&nbsp;`r`&nbsp;`q`&nbsp;`p`&nbsp;`k`&nbsp;`j`&nbsp;`i` | `H`&nbsp;`G`&nbsp;`F`&nbsp;`E`&nbsp;`D`&nbsp;`C`&nbsp;`B`&nbsp;`A` | 0&nbsp;`S`&nbsp;`R`&nbsp;`Q`&nbsp;`P`&nbsp;`K`&nbsp;`J`&nbsp;`I` | `cccccccc`  | 000000&nbsp;`cc` |
+
+| Bits    | Direction | Meaning                                                                                            |
+|---------|-----------|----------------------------------------------------------------------------------------------------|
+| 0000100 |           |                                                                                                    |
+| `m`     | IN / OUT  | The flag mode; `0` to trigger on any flag in the mask ('OR'), `1` to trigger on all flags ('AND'). |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000  |           |                                                                                                                |
+| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+| Bits    | Direction | Meaning                                                                                                                                                                                 |
+|---------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `a`     | IN / OUT  | Attached to a device (ie. a Source (Host) will be on the other end of the cable).                                                                                                       |
+| `b`     | IN / OUT  | Attached as a Debug (Sink) Accessory.                                                                                                                                                   |
+| `c`     | IN / OUT  | Attached to an Audio (Sink / Source) Accessory - *THE ELECTRICAL SPECIFICATIONS FOR AUDIO ACCESSORIES ARE NOT SUPPORTED AND WILL DAMAGE THE DEVICE; THIS FLAG IS FOR INFORMATION ONLY*. |
+| `d`     | IN / OUT  | The cable is an active cable.                                                                                                                                                           |
+| `e`     | IN / OUT  | The VBUS (+5V) voltage is within USB specifications.                                                                                                                                    |
+| `f`     | IN / OUT  | The voltage on the CC pins is within USB specifications.                                                                                                                                |
+| `g`     | IN / OUT  | The CC1 pin (USB connector pin A5) is connected.                                                                                                                                        |
+| `h`     | IN / OUT  | The CC2 pin (USB connector pin B5) is connected.                                                                                                                                        |
+| `i`     | IN / OUT  | No faults have occurred when examining the CC pin(s).                                                                                                                                   |
+| `j`     | IN / OUT  | The D+ / D- lines were checked for short on power-up.                                                                                                                                   |
+| `k`     | IN / OUT  | The D+ / D- lines were shorted on power-up, a crude indication of being connected to a dedicated charger.                                                                               |
+| `p`     | IN / OUT  | Source has suspended the device.                                                                                                                                                        |
+| `q`     | IN / OUT  | USB enumeration has completed.                                                                                                                                                          |
+| `r`     | IN / OUT  | USB protocol error has occurred (one or more endpoints are in the HALTED state).                                                                                                        |
+| `s`     | IN / OUT  | Source device's current capability is at least (*`cc`&nbsp;`cccccccc`*` * 2`)mA.                                                                                                        |
+
+| Bits    | Direction | Meaning                                                                                                                                                                 |
+|---------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `A`     | IN / OUT  | Value to be XOR'd with flag `a`; if `1` then flag `a` will be inverted before evaluation (ie. `1` if a device is _NOT_ attached and `0` otherwise).                     |
+| ...     | IN / OUT  | ...                                                                                                                                                                     |
+| `S`     | IN / OUT  | Value to be XOR'd with flag `s`; if `1` then flag `s` will be inverted before evaluation (ie. `1` if the Source _CANNOT_ provide the requested current, `0` if it can). |
+
+| Bits       | Direction | Meaning                                                                                                                                                                 |
+|------------|-----------|-------------------------------------------------------------------------------------------------------------------------------|
+| `cccccccc` | IN / OUT  | Least significant bits of a value representing a current, in units of `2mA`.  This is used during evaluation of the `s` flag. |
+| 000000     | IN / OUT  | Reserved for future expansion; set to all zeroes.                                                                             |
+| `cc`       | IN / OUT  | The two most significant bits of the current.                                                                                 |
+
+### [0x04 - I<sup>2</sup>C (Inter-Integrated Circuit)](../../I2c/Interface.md)
+Only pins *B2* and *B3* can be assigned to this interface, and they cannot be configured individually.  If the I<sup>2</sup>C module has been enabled
+then any configuration of the *B2* and *B3* pins is overridden.
+
+<!--
+### [0x05 - UART (Universal Asynchronous Receive / Transmit)](../../Uart/Interface.md)
+Any pin can be assigned to this interface.  There are three UART peripherals in the MCU but only two of them are available for configuration
+and use, *UART2* and *UART3*.
+
+#### UART2 RX (Receive)
+The pin is assigned to the UART2 Receive function.  Any pin can be assigned to this function.
+| Function ID | Function Arguments |
+|-------------|--------------------|
+| `????????`  | TODO !             |
+
+#### UART2 CTS (Clear-To-Send)
+The pin is assigned to the UART2 Clear-To-Send function.  Any pin can be assigned to this function.
+
+TODO
+
+#### UART2 TX (Transmit)
+The pin is assigned to the UART2 Transmit function.  Any pin can be assigned to this function.
+
+TODO
+
+#### UART2 RTS (Ready-To-Send)
+The pin is assigned to the UART2 Ready-To-Send function.  Any pin can be assigned to this function.
+
+TODO
+
+#### UART3 RX (Receive)
+The pin is assigned to the UART3 Receive function.  Any pin can be assigned to this function.
+| Function ID | Function Arguments |
+|-------------|--------------------|
+| `????????`  | TODO !             |
+
+#### UART3 CTS (Clear-To-Send)
+The pin is assigned to the UART3 Clear-To-Send function.  Any pin can be assigned to this function.
+
+TODO
+
+#### UART3 TX (Transmit)
+The pin is assigned to the UART3 Transmit function.  Any pin can be assigned to this function.
+
+TODO
+
+#### UART3 RTS (Ready-To-Send)
+The pin is assigned to the UART3 Ready-To-Send function.  Any pin can be assigned to this function.
+
+TODO
+
+### [0x06 - SPI (Serial Peripheral Interface)](../../Spi/Interface.md)
+Any pin can be assigned to this interface.
+
+#### Clock
+The pin is assigned to the SPI Clock function.  Any pin can be assigned to this function.
+| Function ID | Pin Behaviour                    | Reserved                       |
+|-------------|----------------------------------|--------------------------------|
+| 00000001    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000  |           |                                                                                                                |
+| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+#### MISO (Master-In, Slave-Out)
+The pin is assigned to the SPI MISO function.  Any pin can be assigned to this function.
+| Function ID | Pin Behaviour    | Reserved                       |
+|-------------|------------------|--------------------------------|
+| 00000010    | 000000&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits   | Direction | Meaning                                                                                                        |
+|--------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 000000 |           |                                                                                                                |
+| `wp`   | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+#### MOSI (Master-Out, Slave-In)
+The pin is assigned to the SPI MOSI function.  Any pin can be assigned to this function.
+| Function ID | Pin Behaviour            | Reserved                       |
+|-------------|--------------------------|--------------------------------|
+| 00000011    | 00000&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 00000 |           |                                                                                                                |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+#### Frame Select
+The pin is assigned to the SPI Frame Select function.  Any pin can be assigned to this function.
+| Function ID | Pin Behaviour                    | Reserved                       |
+|-------------|----------------------------------|--------------------------------|
+| 00000100    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits | Direction | Meaning                                                                                                        |
+|------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000 |           |                                                                                                                |
+| `l`  | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`  | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp` | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+#### Slave Select
+The pin is assigned to the SPI Slave Select function.  Any pin can be assigned to this function.
+| Function ID      | Pin Behaviour                    | Reserved                       |
+|------------------|----------------------------------|--------------------------------|
+| 00001&nbsp;`nnn` | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 00001 |           |                                                                                                                |
+| `nnn` | IN / OUT  | Slave number, in the range `[0, 7]`.                                                                           |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000  |           |                                                                                                                |
+| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+### [0x07 - ADC (Analogue-to-Digital Converter)](../../Adc/Interface.md)
+There is one ADC with 16 channels, 12 of which are pins.  Only 7 of the pins are available on the header for sampling, but other
+pins can be assigned digital functions.
+
+Any pin can be assigned to this interface but only *A2*, *A3*, *B0*, *B1*, *B2*, *B3* and *B4* can be analogue inputs.
+
+#### Channel Input
+Only pins *A2*, *A3*, *B0*, *B1*, *B2*, *B3* and *B4* can be assigned to this function.
+| Function ID | Reserved                       |
+|-------------|--------------------------------|
+| 00000001    | 7 bytes (should be all zeroes) |
+
+The mapping between pin and analogue channel name is:
+| Pin ID | Channel ID |
+|--------|------------|
+| RA2    | AN5        |
+| RA3    | AN6        |
+| RB0    | AN2        |
+| RB1    | AN3        |
+| RB2    | AN4        |
+| RB3    | AN11       |
+| RB4    | AN7        |
+
+#### Threshold Comparison Output
+Any pin can be assigned to this function.
+| Function ID | Pin Behaviour                     | Reserved                       |
+|-------------|-----------------------------------|--------------------------------|
+| 00000010    | 0000;&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000  |           |                                                                                                                |
+| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+### [0x09 - Comparator](../../Comparator/Interface.md)
+There are 3 analogue voltage comparators available for configuration and use, labelled `[1, 3]`.
+
+Any pin can be assigned to this interface but some functions require dedicated pins.
+
+#### CN1 Positive Input
+Only pin *B3* can be assigned to this function.
+| Function ID | Function Arguments |
+|-------------|--------------------|
+| `????????`  | TODO !             |
+
+#### CN1 Negative Input
+Only pins *B0*, *B1* and *B2* can be assigned to this function.
+
+TODO
+
+#### CN1 Output
+Any pin can be assigned to this function.
+| Function ID | Pin Behaviour                    | Reserved                       |
+|-------------|----------------------------------|--------------------------------|
+| 00001011    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000  |           |                                                                                                                |
+| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+#### CN2 Positive Input
+Only pin *B1* can be assigned to this function.
+| Function ID | Function Arguments |
+|-------------|--------------------|
+| `????????`  | TODO !             |
+
+#### CN2 Negative Input
+Only pin *B0* can be assigned to this function.
+
+TODO
+
+#### CN2 Output
+Any pin can be assigned to this function.
+| Function ID | Pin Behaviour                    | Reserved                       |
+|-------------|----------------------------------|--------------------------------|
+| 00010011    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000  |           |                                                                                                                |
+| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+#### CN3 Negative Input
+Only pins *A3* and *B0* can be assigned to this function.
+
+TODO
+
+#### CN3 Output
+Any pin can be assigned to this function.
+| Function ID | Pin Behaviour                    | Reserved                       |
+|-------------|----------------------------------|--------------------------------|
+| 00011011    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+
+| Bits  | Direction | Meaning                                                                                                        |
+|-------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000  |           |                                                                                                                |
+| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+
+### [0x0a - CLC (Configurable Logic Cell)](../../Clc/Interface.md)
+| Function ID | Function Arguments |
+|-------------|--------------------|
+| `????????`  | TODO !             |
+-->
+**THIS COMMAND HAS THE POTENTIAL TO DESTROY THE DEVICE AND / OR CONNECTED CIRCUITRY, IE. BY SHORT-CIRCUITING TWO OUTPUTS TOGETHER.**
+""" \
+		.format(
+			reportId=report_id,
+			bankId2Bits=(report_id & 0x30) >> 4,
+			pinIndex4Bits=report_id & 0x0f,
+			reportId6Bits=report_id & 0x3f,
+			pinName=pin_name
+		))
+		fd.close()
