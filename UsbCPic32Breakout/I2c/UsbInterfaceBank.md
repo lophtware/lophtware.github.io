@@ -3,6 +3,7 @@ This bank allows I<sup>2</sup>C Masters to query the state of the USB module and
 
 ## Status Flags `[0x010, 0x013]`
 Flags indicating the status of the USB cable, connection and stack:
+
 | 0x010      | 0x011            | 0x012           | 0x013           |
 |------------|------------------|-----------------|-----------------|
 | `hgfedcba` | 00&nbsp;`rqpkji` | Reserved (zero) | Reserved (zero) |
@@ -27,6 +28,7 @@ Flags indicating the status of the USB cable, connection and stack:
 ## Current Limit `[0x014, 0x015]`
 A 16-bit Little Endian word indicating the current limit, in milliamps, that has been agreed with the Host or assumed of the charger.  Note that this may change
 during the lifetime of the connection, for example if the Host decides to re-enumerate the device under a different configuration:
+
 | 0x014      | 0x015            |
 |------------|------------------|
 | `cccccccc` | 00000&nbsp;`ccc` |
@@ -34,6 +36,7 @@ during the lifetime of the connection, for example if the Host decides to re-enu
 ## Configuration Number `[0x016]`
 The currently selected USB configuration.  This is the value from the standard USB `Set_Configuration` request that is sent during enumeration.  If the device
 has not enumerated (for example, it is attached to a charger or the Host cannot satisfy the requested current limits) then this value will be `0x00`.
+
 | 0x016            |
 |------------------|
 | 0000&nbsp;`cccc` |
@@ -41,6 +44,7 @@ has not enumerated (for example, it is attached to a charger or the Host cannot 
 ## Send Message to Host `[0x200, 0x206]`
 An arbitrary message can be sent to the Host at the other end of the USB cable by writing to register `[0x206]`, with the payload being the previous 6 bytes
 (registers in the range `[0x200, 0x205]`):
+
 | 0x200-0x205      | 0x206                    |
 |------------------|--------------------------|
 | 6 bytes          | 000000&nbsp;`b`&nbsp;`w` |

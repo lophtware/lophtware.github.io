@@ -10,6 +10,7 @@ datasheet but PIC ICSP can get a bit complicated so it's best to use a PICKit, P
 
 ## PICKit
 The PICKit is straightforward.  Make sure that power is applied to the board (ie. the USB cable is attached) and connect the following pins:
+
 | Board Pin | PICKit Name | Notes                                                                                       |
 |-----------|-------------|---------------------------------------------------------------------------------------------|
 | EN        | /MCLR       |                                                                                             |
@@ -23,6 +24,7 @@ map 1:1_ with the PICKit's header.  The order of the board pins is *+3.3V*, *0V*
 
 ## Pickle
 A Raspberry Pi running [Pickle](https://wiki.kewl.org/dokuwiki/projects:pickle) is another way of programming the device.  The ICSP pin mapping is:
+
 | Board Pin | Name        | Notes                                          |
 |-----------|-------------|------------------------------------------------|
 | EN        | /MCLR       |                                                |
@@ -37,6 +39,7 @@ enclosure - a PICKit won't work unless you provide an external power source for 
 +5V VBUS).
 
 Programming the device as a Debug Accessory utilises the following USB pins:
+
 | USB Pin  | Name | ICSP Pin | Description                                                                                                                       |
 |----------|------|----------|-----------------------------------------------------------------------------------------------------------------------------------|
 | Various  | VBUS |          | A +5V supply capable of providing current to whatever circuitry is attached.                                                      |

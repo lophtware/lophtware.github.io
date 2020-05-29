@@ -4,6 +4,7 @@ one of a number of other functions.  As well as configuration this interface can
 allows the Host to be notified of certain events.
 
 ## Reports
+
 | Report ID               | Direction | Description                                                  |
 |-------------------------|-----------|--------------------------------------------------------------|
 | [0x01](Reports/0x01.md) | IN        | [Command Acknowledgement](Reports/0x01.md).                  |

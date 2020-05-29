@@ -3,6 +3,7 @@ The I<sup>2</sup>C Interface allows configuration of the device's I<sup>2</sup>C
 with Master and Slave devices on the I<sup>2</sup>C bus.
 
 ## Reports
+
 | Report ID                    | Direction | Description                                                        |
 |------------------------------|-----------|--------------------------------------------------------------------|
 | [0x01](Reports/0x01.md)      | IN        | [Command Acknowledgement](Reports/0x01.md)                         |

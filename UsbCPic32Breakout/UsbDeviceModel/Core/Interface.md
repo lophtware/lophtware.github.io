@@ -19,6 +19,7 @@ GPIO-capable pins, all except the I<sup>2</sup>C-capable `SCL` and `SDA` can hav
 
 ### Digital GPIO Features
 #### Direction
+
 | Direction                       | Description                                                              |
 |---------------------------------|--------------------------------------------------------------------------|
 | Input                           | The pin is a dedicated input.  Logic levels only, do not allow to float. |
@@ -38,6 +39,7 @@ When the device exits Suspend Mode the pre-Suspend settings are restored.
 | Output High       | The pin will switch to an output and will be driven high (push-pull) or high-impedance (open-drain).                                          |
 
 #### Default Latch Value
+
 | Default Latch Value | Description                                                                      |
 |---------------------|----------------------------------------------------------------------------------|
 | 0                   | The output latch will be reset to 0 at power-on.  For inputs this has no effect. |

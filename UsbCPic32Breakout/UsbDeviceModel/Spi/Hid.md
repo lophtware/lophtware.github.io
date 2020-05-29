@@ -2,6 +2,7 @@
 Add some content here.
 
 ## Reports
+
 | Report ID               | Direction | Description                                                                        |
 |-------------------------|-----------|------------------------------------------------------------------------------------|
 | [0x40](Reports/0x40.md) | IN / OUT  | [Half-Duplex Transfer; 0-31 Bytes Out, 1+ Bytes In](Reports/0x40.md)               |

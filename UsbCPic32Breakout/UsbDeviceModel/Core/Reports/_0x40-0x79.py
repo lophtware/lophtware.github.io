@@ -29,6 +29,7 @@ Acknowledged By: [Command Acknowledgement](0x01.md)
 HID Report ID.  Always `0x{reportId:02x}`.
 
 The _Pin Configuration_ report IDs all follow this encoding scheme:
+
 | Bits   | Direction | Meaning                                                                     |
 |--------|-----------|-----------------------------------------------------------------------------|
 | 01     |           |                                                                             |
@@ -50,6 +51,7 @@ For an IN Report this will be all zeroes.
 
 ## Suspend Behaviour
 The behaviour of the pin when the device enters Suspend.
+
 | Bits  | Direction | Meaning                                                                                                        |
 |-------|-----------|----------------------------------------------------------------------------------------------------------------|
 | `ss`  | IN / OUT  | Suspend behaviour; `00` for unchanged, `01` to switch to input, `10` to output low, `11` to output high.       |
@@ -66,6 +68,7 @@ Any pin can be assigned to this interface.
 
 #### GPIO<a name="gpio" />
 The pin is assigned to the GPIO function.  Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour                    | Interrupt Behaviour              | Flags            | Reserved                                           |
 |-------------|----------------------------------|----------------------------------|------------------|----------------------------------------------------|
 | 000000`dd`  | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 00000&nbsp;`p`&nbsp;`n`&nbsp;`m` | 0000&nbsp;`iiii` | 00000000&nbsp;00000000&nbsp;00000000&nbsp;00000000 |
@@ -102,6 +105,7 @@ It is not possible to assign the same ID to multiple pins - the pin assigned las
 
 <!--
 ### [0x01 - Timer](../../Timer/Interface.md)
+
 | Function ID | Function Arguments |
 |-------------|--------------------|
 | `????????`  | TODO !             |
@@ -120,6 +124,7 @@ Any pin can be assigned to this interface but some functions require dedicated p
 
 #### MCCP1 Output C
 The pin is assigned to the *C* Output.  Only *A2* can be assigned to this function.
+
 | Function ID | Function Arguments |
 |-------------|--------------------|
 | `????????`  | TODO !             |
@@ -214,6 +219,7 @@ Any pin can be assigned to this function.  Multiple pins can be assigned to this
 Multiple flags can be combined together into a single output pin using either an AND or an OR operation.  Flags can also be inverted
 prior to the combining operation.  This scheme provides a very flexible method of signalling USB state to connected circuitry.
 For example, it is possible to have a pin indicating the condition of _NOT attached to a dedicated charger AND the device can source a current of at least 100mA_.
+
 | Function ID      | Pin Behaviour                    | Mask LSB                                                           | Mask MSB                                                         | Mask Inversion LSB                                                 | Mask Inversion MSB                                               | Current LSB | Current MSB      |
 |------------------|----------------------------------|--------------------------------------------------------------------|------------------------------------------------------------------|--------------------------------------------------------------------|------------------------------------------------------------------|-------------|------------------|
 | 0000100&nbsp;`m` | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | `h`&nbsp;`g`&nbsp;`f`&nbsp;`e`&nbsp;`d`&nbsp;`c`&nbsp;`b`&nbsp;`a` | 0&nbsp;`s`&nbsp;`r`&nbsp;`q`&nbsp;`p`&nbsp;`k`&nbsp;`j`&nbsp;`i` | `H`&nbsp;`G`&nbsp;`F`&nbsp;`E`&nbsp;`D`&nbsp;`C`&nbsp;`B`&nbsp;`A` | 0&nbsp;`S`&nbsp;`R`&nbsp;`Q`&nbsp;`P`&nbsp;`K`&nbsp;`J`&nbsp;`I` | `cccccccc`  | 000000&nbsp;`cc` |
@@ -271,6 +277,7 @@ and use, *UART2* and *UART3*.
 
 #### UART2 RX (Receive)
 The pin is assigned to the UART2 Receive function.  Any pin can be assigned to this function.
+
 | Function ID | Function Arguments |
 |-------------|--------------------|
 | `????????`  | TODO !             |
@@ -292,6 +299,7 @@ TODO
 
 #### UART3 RX (Receive)
 The pin is assigned to the UART3 Receive function.  Any pin can be assigned to this function.
+
 | Function ID | Function Arguments |
 |-------------|--------------------|
 | `????????`  | TODO !             |
@@ -316,6 +324,7 @@ Any pin can be assigned to this interface.
 
 #### Clock
 The pin is assigned to the SPI Clock function.  Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour                    | Reserved                       |
 |-------------|----------------------------------|--------------------------------|
 | 00000001    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -329,6 +338,7 @@ The pin is assigned to the SPI Clock function.  Any pin can be assigned to this 
 
 #### MISO (Master-In, Slave-Out)
 The pin is assigned to the SPI MISO function.  Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour    | Reserved                       |
 |-------------|------------------|--------------------------------|
 | 00000010    | 000000&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -340,6 +350,7 @@ The pin is assigned to the SPI MISO function.  Any pin can be assigned to this f
 
 #### MOSI (Master-Out, Slave-In)
 The pin is assigned to the SPI MOSI function.  Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour            | Reserved                       |
 |-------------|--------------------------|--------------------------------|
 | 00000011    | 00000&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -352,6 +363,7 @@ The pin is assigned to the SPI MOSI function.  Any pin can be assigned to this f
 
 #### Frame Select
 The pin is assigned to the SPI Frame Select function.  Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour                    | Reserved                       |
 |-------------|----------------------------------|--------------------------------|
 | 00000100    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -365,6 +377,7 @@ The pin is assigned to the SPI Frame Select function.  Any pin can be assigned t
 
 #### Slave Select
 The pin is assigned to the SPI Slave Select function.  Any pin can be assigned to this function.
+
 | Function ID      | Pin Behaviour                    | Reserved                       |
 |------------------|----------------------------------|--------------------------------|
 | 00001&nbsp;`nnn` | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -389,11 +402,13 @@ Any pin can be assigned to this interface but only *A2*, *A3*, *B0*, *B1*, *B2*,
 
 #### Channel Input
 Only pins *A2*, *A3*, *B0*, *B1*, *B2*, *B3* and *B4* can be assigned to this function.
+
 | Function ID | Reserved                       |
 |-------------|--------------------------------|
 | 00000001    | 7 bytes (should be all zeroes) |
 
 The mapping between pin and analogue channel name is:
+
 | Pin ID | Channel ID |
 |--------|------------|
 | RA2    | AN5        |
@@ -406,6 +421,7 @@ The mapping between pin and analogue channel name is:
 
 #### Threshold Comparison Output
 Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour                     | Reserved                       |
 |-------------|-----------------------------------|--------------------------------|
 | 00000010    | 0000;&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -424,6 +440,7 @@ Any pin can be assigned to this interface but some functions require dedicated p
 
 #### CN1 Positive Input
 Only pin *B3* can be assigned to this function.
+
 | Function ID | Function Arguments |
 |-------------|--------------------|
 | `????????`  | TODO !             |
@@ -435,6 +452,7 @@ TODO
 
 #### CN1 Output
 Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour                    | Reserved                       |
 |-------------|----------------------------------|--------------------------------|
 | 00001011    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -448,6 +466,7 @@ Any pin can be assigned to this function.
 
 #### CN2 Positive Input
 Only pin *B1* can be assigned to this function.
+
 | Function ID | Function Arguments |
 |-------------|--------------------|
 | `????????`  | TODO !             |
@@ -459,6 +478,7 @@ TODO
 
 #### CN2 Output
 Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour                    | Reserved                       |
 |-------------|----------------------------------|--------------------------------|
 | 00010011    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -477,6 +497,7 @@ TODO
 
 #### CN3 Output
 Any pin can be assigned to this function.
+
 | Function ID | Pin Behaviour                    | Reserved                       |
 |-------------|----------------------------------|--------------------------------|
 | 00011011    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
@@ -489,6 +510,7 @@ Any pin can be assigned to this function.
 | `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
 
 ### [0x0a - CLC (Configurable Logic Cell)](../../Clc/Interface.md)
+
 | Function ID | Function Arguments |
 |-------------|--------------------|
 | `????????`  | TODO !             |

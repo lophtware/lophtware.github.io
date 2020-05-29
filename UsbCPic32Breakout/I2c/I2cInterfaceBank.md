@@ -3,6 +3,7 @@ This bank allows I<sup>2</sup>C Masters to query and manipulate the I<sup>2</sup
 
 ## RAM Write Protect Flag
 The Write Protect Flag for the [I<sup>2</sup>C RAM Bank](RamBank.md) resides at address `0x010`.
+
 | 0x010            |
 |------------------|
 | 0000000&nbsp;`w` |
@@ -14,6 +15,7 @@ Note that the `Protected RAM Address Mask` (below) takes precedence over this fl
 
 ## RAM Protected Address Mask
 The Protected Address Mask for the [I<sup>2</sup>C RAM Bank](RamBank.md) resides at addresses `[0x011, 0x012]` as a 16-bit Little Endian word.
+
 | 0x011 (LSB) | 0x012 (MSB)              |
 |-------------|--------------------------|
 | `mmmmmmmm`  | `z`&nbsp;00000&nbsp;`mm` |
@@ -24,6 +26,7 @@ and the meanings of the bits.
 
 ## ROM Write Protect Flag
 The Write Protect Flag for the [I<sup>2</sup>C ROM Bank](RomBank.md) resides at address `0x020`.
+
 | 0x020            |
 |------------------|
 | 0000000&nbsp;`w` |
@@ -35,6 +38,7 @@ Note that the `Protected ROM Address Mask` (below) takes precedence over this fl
 
 ## ROM Protected Address Mask
 The Protected Address Mask for the [I<sup>2</sup>C ROM Bank](RomBank.md) resides at addresses `[0x021, 0x022]` as a 16-bit Little Endian word.
+
 | 0x021 (LSB) | 0x022 (MSB)              |
 |-------------|--------------------------|
 | `mmmmmmmm`  | `z`&nbsp;00000&nbsp;`mm` |

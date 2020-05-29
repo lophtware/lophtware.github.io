@@ -2,6 +2,7 @@
 The USB Interface is for USB event notifications and device configuration, such as descriptor values.
 
 ## Reports
+
 | Report ID               | Direction | Description                                                    |
 |-------------------------|-----------|----------------------------------------------------------------|
 | [0x01](Reports/0x01.md) | IN        | [Command Acknowledgement](Reports/0x01.md).                    |

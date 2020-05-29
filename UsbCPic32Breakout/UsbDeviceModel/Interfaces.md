@@ -23,11 +23,13 @@ the [PIC32MM0256GPM028](https://github.com/lophtware/UsbCPic32Breakout/blob/mast
 ## Reports
 Each HID interface has its own set of IN and OUT Reports and the IDs can overlap.  However, there are some generic reports that are consistent across all
 interfaces:
+
 | Report ID                    | Direction | Description                                                        |
 |------------------------------|-----------|--------------------------------------------------------------------|
 | [0x01](Reports/0x01.md)      | IN        | [Command Acknowledgement](Reports/0x01.md)                         |
 
 Reports are categorised as _IN_, _Interrupt IN_ and _OUT_:
+
 | Direction    | Description                                                                                                                                |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | IN           | The Host can request the report via a standard USB `Get_Report` transaction.                                                               |
