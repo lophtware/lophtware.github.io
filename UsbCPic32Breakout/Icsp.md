@@ -5,7 +5,7 @@ USB Type-C connector / dongle to connect as a Debug Accessory.
 Note that the +5V and +3.3V pins broken out by the header _should NOT_ be driven from off the board.  The _ONLY_ way to power the board is via the USB connector.
 All ICSP signals are +3.3V CMOS.
 
-The ICSP details are in the [PIC32 Family Programming and Diagnostics](../blob/master/doc/datasheets/mcu/PIC32MM-33-ProgrammingAndDiagnostics-61129F.pdf)
+The ICSP details are in the [PIC32 Family Programming and Diagnostics](https://github.com/lophtware/UsbCPic32Breakout/blob/master/doc/datasheets/mcu/PIC32MM-33-ProgrammingAndDiagnostics-61129F.pdf)
 datasheet but PIC ICSP can get a bit complicated so it's best to use a PICKit, Pickle or some other programmer and just map the signals accordingly.
 
 ## PICKit

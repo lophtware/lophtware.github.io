@@ -1,9 +1,10 @@
 # Hello, World !
 This page illustrates the obligatory _Hello, World !_ example of a blinking LED.  There are a lot of words to explain the key concepts of the device but the
 code itself is simple.  Python is the language of choice but the process is the same no matter what language is chosen.  The source code for the
-[blinking LED example](../blob/master/src/examples/blink/python/blink.py) is in the GitHub repository.  Various other [examples](../tree/master/src/examples/)
-are also in the repository.  Most of the examples are bare-bones intended to show the usage of one or two of the [reports](UsbDeviceModel/Interfaces.md), with
-minimal error checking and other fluff.  So when implementing your own code, be aware of the things that have been ommitted at the expense of robustness.
+[blinking LED example](https://github.com/lophtware/UsbCPic32Breakout/blob/master/src/examples/blink/python/blink.py) is in the GitHub repository.  Various
+other [examples](https://github.com/lophtware/UsbCPic32Breakout/tree/master/src/examples/) are also in the repository.  Most of the examples are bare-bones
+intended to show the usage of one or two of the [reports](UsbDeviceModel/Interfaces.md), with minimal error checking and other fluff.  So when implementing your
+own code, be aware of the things that have been ommitted at the expense of robustness.
 
 ## The Breadboard Layout
 The breadboard layout is simple.  A resistor, in this case 330 ohms but any that limits the current to less than 10mA will do, and an LED connected in series
@@ -162,7 +163,7 @@ Flashing the LED is done by toggling pin `A3` - or rather, the pin we assigned t
 [Pin Parallel Load / Set / Reset / Toggle](UsbDeviceModel/Core/Reports/0x14.md) command.  This command takes an operator - _load_, _set_, _reset_ or _toggle_ -
 and a 16-bit word, with each bit in the mask representing one of the pins.  Our assigned ID of `0x00` reads as 'bit 0', so our mask is `1 << 0`.  It is possible
 to manipulate more than one pin at a time which is useful for writing values onto a bus or controlling a 7-segment display, for example.  See
-[blink2.py](../blob/master/src/examples/blink/python/blink2.py) for an example that flashes two LEDs to output a 2-bit counted sequence.
+[blink2.py](https://github.com/lophtware/UsbCPic32Breakout/blob/master/src/examples/blink/python/blink2.py) for an example that flashes two LEDs to output a 2-bit counted sequence.
 
 As an acknowledgement to modifying the pin values, the [Pin Parallel Load / Set / Reset / Toggle](UsbDeviceModel/Core/Reports/0x14.md) command will respond with
 a [Pin Parallel Status](UsbDeviceModel/Core/Reports/0x16.md) report.  For this example we don't really care what the contents of that report are so it is just
@@ -174,7 +175,8 @@ def toggle_pin(dev, pin_id):
 	mask = 1 << pin_id
 	send_report(dev, [report_id, toggle, mask & 0xff, (mask >> 8) & 0xff], expected_ack=0x16)
 ```
-Watch an [action shot](HelloWorld-Breadboard.mp4) of the breadboard running [blink.py](../blob/master/src/examples/blink/python/blink.py).
+Watch an [action shot](HelloWorld-Breadboard.mp4) of the breadboard running
+[blink.py](https://github.com/lophtware/UsbCPic32Breakout/blob/master/src/examples/blink/python/blink.py).
 
 ## Job Done
 So in summary, the order of operations for prototyping with the device can be generalised as:
