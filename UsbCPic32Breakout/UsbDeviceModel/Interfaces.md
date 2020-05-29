@@ -7,6 +7,7 @@ the [PIC32MM0256GPM028](https://github.com/lophtware/UsbCPic32Breakout/blob/mast
 |   0 | [Core](Core/Interface.md)                        | Device-, pin- and configuration-related functions, such as GPIO, interrupt-on-change, etc.         |
 |   3 | [USB](Usb/Interface.md)                          | USB (Universal Serial Bus) information, such as Debug Accessory Mode detection and general status. |
 |   4 | [I2C](I2c/Interface.md)                          | I<sup>2</sup>C (Inter-Integrated Circuit) bus functions.                                           |
+
 <!--
 |   1 | [Timer](Timer/Interface.md)                      | Basic timer functions.                                                                             |
 |   2 | [CCP](Ccp/Interface.md)                          | CCP (Capture / Compare / Pulse-Width-Modulation) functions.                                        |
