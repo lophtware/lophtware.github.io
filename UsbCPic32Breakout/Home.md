@@ -1,9 +1,9 @@
 ![The USB Type-C / PIC32 Breakout Board](Home-Board-200x168.png)
 
 # USB Type-C / PIC32 Breakout Board
-The USB Type-C / PIC32 Breakout Board is intended to be a breadboarding and prototyping aid, providing common functionality for a variety of general-purpose
+The USB Type-C / PIC32 Breakout Board is a breadboarding and prototyping aid with firmware providing common functionality for a variety of general-purpose
 use-cases.  The board aims to be a more flexible offering compared to the FT232-type breakout boards by incorporating a 32-bit PIC.  The major design goal is
-plug-n-play for rapid prototyping without the need for an in-depth knowledge of USB or installing any custom drivers.
+plug-n-play for rapid prototyping without the need for an in-depth knowledge of USB or having to install custom drivers.
 
 The chosen USB protocol for the stock firmware is _HID_ (Human Interface Device) because it is ubiquitous and does not require drivers or (significant)
 configuration of the Host to be up and running fast.  It _should just work_.
