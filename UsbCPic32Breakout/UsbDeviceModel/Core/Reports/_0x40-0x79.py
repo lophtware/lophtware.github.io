@@ -318,6 +318,7 @@ TODO
 The pin is assigned to the UART3 Ready-To-Send function.  Any pin can be assigned to this function.
 
 TODO
+-->
 
 ### [0x06 - SPI (Serial Peripheral Interface)](../../Spi/Interface.md)
 Any pin can be assigned to this interface.
@@ -332,7 +333,7 @@ The pin is assigned to the SPI Clock function.  Any pin can be assigned to this 
 | Bits  | Direction | Meaning                                                                                                        |
 |-------|-----------|----------------------------------------------------------------------------------------------------------------|
 | 0000  |           |                                                                                                                |
-| `l`   | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `l`   | IN / OUT  | The latch state when no slaves are selected; `0` for low, `1` for high.                                        |
 | `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
 | `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
 
@@ -351,15 +352,16 @@ The pin is assigned to the SPI MISO function.  Any pin can be assigned to this f
 #### MOSI (Master-Out, Slave-In)
 The pin is assigned to the SPI MOSI function.  Any pin can be assigned to this function.
 
-| Function ID | Pin Behaviour            | Reserved                       |
-|-------------|--------------------------|--------------------------------|
-| 00000011    | 00000&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
+| Function ID | Pin Behaviour                    | Reserved                       |
+|-------------|----------------------------------|--------------------------------|
+| 00000011    | 0000&nbsp;`l`&nbsp;`o`&nbsp;`wp` | 6 bytes (should be all zeroes) |
 
-| Bits  | Direction | Meaning                                                                                                        |
-|-------|-----------|----------------------------------------------------------------------------------------------------------------|
-| 00000 |           |                                                                                                                |
-| `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
-| `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
+| Bits | Direction | Meaning                                                                                                        |
+|------|-----------|----------------------------------------------------------------------------------------------------------------|
+| 0000 |           |                                                                                                                |
+| `l`  | IN / OUT  | The latch state when no slaves are selected; `0` for low, `1` for high.                                        |
+| `o`  | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
+| `wp` | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
 
 #### Frame Select
 The pin is assigned to the SPI Frame Select function.  Any pin can be assigned to this function.
@@ -371,7 +373,7 @@ The pin is assigned to the SPI Frame Select function.  Any pin can be assigned t
 | Bits | Direction | Meaning                                                                                                        |
 |------|-----------|----------------------------------------------------------------------------------------------------------------|
 | 0000 |           |                                                                                                                |
-| `l`  | IN / OUT  | The active-state; `0` for active-low, `1` for active-high.                                                     |
+| `l`  | IN / OUT  | The latch state when no slaves are selected; `0` for low, `1` for high.                                        |
 | `o`  | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
 | `wp` | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
 
@@ -394,6 +396,7 @@ The pin is assigned to the SPI Slave Select function.  Any pin can be assigned t
 | `o`   | IN / OUT  | Output type; `0` for push-pull, `1` for open-drain.                                                            |
 | `wp`  | IN / OUT  | Weak Pulls; `00` for none, `01` for pull-down, `10` for pull-up, `11` is reserved but will enable the pull-up. |
 
+<!--
 ### [0x07 - ADC (Analogue-to-Digital Converter)](../../Adc/Interface.md)
 There is one ADC with 16 channels, 12 of which are pins.  Only 7 of the pins are available on the header for sampling, but other
 pins can be assigned digital functions.

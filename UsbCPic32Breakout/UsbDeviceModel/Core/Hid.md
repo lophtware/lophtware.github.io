@@ -14,6 +14,7 @@ allows the Host to be notified of certain events.
 | [0x14](Reports/0x14.md) | OUT       | [Pin Parallel Load / Set / Reset / Toggle](Reports/0x14.md). |
 | [0x16](Reports/0x16.md) | IN        | [Pin Parallel Status](Reports/0x16.md).                      |
 | [0x18](Reports/0x18.md) | IN        | [Pins Changed](Reports/0x18.md).                             |
+| [0x19](Reports/0x19.md) | OUT       | [Pins Changed One-Shot Reset](Reports/0x19.md).              |
 | [0x42](Reports/0x42.md) | IN / OUT  | [Pin Configuration (A2)](Reports/0x42.md).                   |
 | [0x43](Reports/0x43.md) | IN / OUT  | [Pin Configuration (A3)](Reports/0x43.md).                   |
 | [0x44](Reports/0x44.md) | IN / OUT  | [Pin Configuration (A4)](Reports/0x44.md).                   |

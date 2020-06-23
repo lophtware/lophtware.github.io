@@ -25,7 +25,7 @@ configuration of the Host to be up and running fast.  It _should just work_.
   - USB 2.0 Full Speed (12Mib/s) Compatible Human Interface Device (HID) Endpoints, negating the need for custom drivers
   - USB Type-C power / CC pin capability detection - note this is _NOT_ USB PD ([FUSB303](https://github.com/lophtware/UsbCPic32Breakout/blob/master/doc/datasheets/usb/FUSB303.pdf))
   - Programmable both via USB Type-C Debug Accessory Mode to allow firmware updates without opening an enclosure, or via GPIO pins ([ICSP](Icsp.md))
-  - A +3.3V Low Drop-Out (LDO) Linear Regulator ([AP2114HA](https://github.com/lophtware/UsbCPic32Breakout/blob/master/doc/datasheets/power/AP2114HA-1.2TRG1.pdf)) capable of supplying a typical 1A (derated to 150mA at 50 Celsius ambient, without a heatsink)
+  - A +3.3V Low Drop-Out (LDO) Linear Regulator ([AP2114HA](https://github.com/lophtware/UsbCPic32Breakout/blob/master/doc/datasheets/power/AP2114HA-1.2TRG1.pdf)) capable of supplying a minimum 1A (derated to 150mA at 50 Celsius ambient, without a heatsink)
   - Over-current protection of 1.5A (typical; 1.2A-1.8A) to protect the Host from breadboard disasters ([NCP367DPMUEC](https://github.com/lophtware/UsbCPic32Breakout/blob/master/doc/datasheets/usb/NCP367DPMUEC.pdf))
   - Over-voltage protection up to +24V to protect the device and any breadboard circuitry ([NCP367DPMUEC](https://github.com/lophtware/UsbCPic32Breakout/blob/master/doc/datasheets/usb/NCP367DPMUEC.pdf))
   - All GPIO pins capable of sourcing / sinking 10mA, enough to drive LEDs (remember a series resistor !)

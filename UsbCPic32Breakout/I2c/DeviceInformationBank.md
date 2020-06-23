@@ -59,3 +59,6 @@ The Microcontroller's `RCON` register is exposed at addresses `[0x040, 0x043]`. 
 ## MCU Exception Details
 During some resets, snapshots of the Microcontroller's `ERROREPC`, `EPC`, `CAUSE`, `DESAVE` and `RA` registers are exposed at addresseses `[0x044, 0x054]`,
 respectively.  These values are useful for debugging.
+
+At addresses `[0x058, 0x05f]` are two debugging words that are persisted across device resets that can be written by the firmware.  In ordinary operation these
+values are undefined (uninitialised), but they are useful for leaving traces and markers when hacking the firmware is causing hard-to-find general exceptions.

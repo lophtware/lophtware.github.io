@@ -45,7 +45,7 @@ thousands to the USB Implementor Forum for these, but the sensible people at [pi
 their IDs.  Each product manufactured by a vendor also gets a unique ID, the _Product Identifier_ (_PID_).  For this project the values are:
 ```python
 VID = 0x1209
-PID = 0x0001
+PID = 0xcb0b
 ```
 As well as those two values, which are used in locating attached devices, we will need an _Interface ID_ for communicating with a specific part of the device.
 The Interface ID is a number assigned by the firmware based on a functional model.  The better way to locate the interface is by name, but for the examples it's
@@ -130,8 +130,10 @@ def configure_a3_as_led_output(dev):
 
 ## Sending Reports
 Sending HID reports with HIDAPI is simple and looks like regular file I/O, albeit with a small difference.  The interface's device handle, `dev` in our case, can
-be read and written with `read()` and `write()` calls.  When reading, we get at most _one_ report back, up to the number of bytes we request.  This simplifies
-parsing the reports.  For this example we're not expecting any response over 16 bytes.
+be read and written with `read()` and `write()` calls.  When reading we get transfers up to the number of bytes we request.  If the report spans multiple transfers
+then we will need to stitch them together with repeated `read()`s which can become complicated as it requires knowing the sizes of the expected reports.  For this
+example we're not expecting any response over 16 bytes though, and because the Core endpoint's size (ie. maximum transfer size) is 64 bytes we can keep it simple
+by using a single `read()`.
 
 All of the commands sent to the device will have some sort of response, even if that is a generic [Command Acknowledgement](UsbDeviceModel/Reports/0x01.md)
 report.  Be aware that the first report that is sent back is not necessarily the response we're looking for as the device might be processing other commands in
